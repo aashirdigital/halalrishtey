@@ -1,0 +1,29 @@
+{
+  "files": {
+    "main.css": "/static/css/main.a1526f70.css",
+    "main.js": "/static/js/main.2e6814bd.js",
+    "static/media/4.jpg": "/static/media/4.a09841bedeec4119a774.jpg",
+    "static/media/3.jpg": "/static/media/3.8bd26473e6bc67999379.jpg",
+    "static/media/male.png": "/static/media/male.2963ee3903916a66b90c.png",
+    "static/media/2.jpg": "/static/media/2.d393a3abd5cf309b11a8.jpg",
+    "static/media/muslim.jpeg": "/static/media/muslim.dc5c4fe05f53451e9581.jpeg",
+    "static/media/aboutus.png": "/static/media/aboutus.6e37a2a2df5d97dd697d.png",
+    "static/media/female.png": "/static/media/female.c27a98ccdc16c304b6a1.png",
+    "static/media/offer.jpg": "/static/media/offer.e9d76383618351785f10.jpg",
+    "static/media/1.png": "/static/media/1.45a26f2ed96d36f2e2d7.png",
+    "static/media/herobg.jpg": "/static/media/herobg.f6ec356a93969ac714c7.jpg",
+    "static/media/logo.png": "/static/media/logo.4f4b70c22059c6dfd52a.png",
+    "static/media/no-result.png": "/static/media/no-result.4406cdf178501df21252.png",
+    "index.html": "/index.html",
+    "static/media/trusted.svg": "/static/media/trusted.2170f1c90ddbf47eebf3b36977fbf6a4.svg",
+    "static/media/verified.svg": "/static/media/verified.20f47f45f5548ca07818a850c9f0c42c.svg",
+    "static/media/privacy.svg": "/static/media/privacy.f70fd6e8efc73862df9b8bc5ae54ae3c.svg",
+    "static/media/register.svg": "/static/media/register.415aba686d7e48f1f13bc885c116fab9.svg",
+    "main.a1526f70.css.map": "/static/css/main.a1526f70.css.map",
+    "main.2e6814bd.js.map": "/static/js/main.2e6814bd.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a1526f70.css",
+    "static/js/main.2e6814bd.js"
+  ]
+}
