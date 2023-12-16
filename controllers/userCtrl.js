@@ -73,9 +73,11 @@ const loginController = async (req, res) => {
         .status(200)
         .send({ success: false, message: "Invalid Credentials" });
     }
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
+
     if (isMatch) {
       user.lastLogin = new Date();
       await user.save();
@@ -214,6 +216,7 @@ const stepTwoController = async (req, res) => {
 
 const stepThreeController = async (req, res) => {
   try {
+    const user = await userModel.findOne({ email: req.body.email });
     const updateUser = await userModel.findOneAndUpdate(
       {
         email: req.body.email,
@@ -596,6 +599,27 @@ const userActiveController = async (req, res) => {
   }
 };
 
+const checkMobileNumberController = async (req, res) => {
+  try {
+    const mobile = await userModel.findOne({ mobile: req.body.ph });
+    if (!mobile) {
+      return res.status(200).send({
+        success: false,
+        message: "Mobile Number not found",
+      });
+    }
+    return res.status(201).send({
+      success: true,
+      message: "This mobile number is already registered with us",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: `Check Mobile Number Ctrl ${error.message}`,
+    });
+  }
+};
+
 // send mobile sms otp
 const sendSMSController = async (req, res) => {
   try {
@@ -642,7 +666,6 @@ const verifyMobileController = async (req, res) => {
         .status(200)
         .send({ success: false, message: "User Not Found" });
     }
-
     if (userExist.mobileOtp !== req.body.otp) {
       return res.status(200).send({ success: false, message: "Incorrect OTP" });
     } else {
@@ -651,6 +674,9 @@ const verifyMobileController = async (req, res) => {
         { $set: { mobileVerified: "Yes" } },
         { new: true }
       );
+      const token = jwt.sign({ id: userExist._id }, process.env.JWT_SECRET, {
+        expiresIn: "1d",
+      });
       if (!updateUser) {
         return res
           .status(200)
@@ -660,6 +686,7 @@ const verifyMobileController = async (req, res) => {
         success: true,
         message: message,
         data: updateUser,
+        token: token,
       });
     }
   } catch (error) {
@@ -906,4 +933,5 @@ module.exports = {
   adminController,
   getAllTodayMatchUserController,
   getAllUserNearMeController,
+  checkMobileNumberController,
 };

@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 var cors = require("cors");
 const bodyParser = require("body-parser");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 
 // dotenv
 dotenv.config();
@@ -14,6 +15,14 @@ dotenv.config();
 connectDB();
 // rest object
 const app = express();
+
+app.use(
+  "/userImages",
+  createProxyMiddleware({
+    target: "https://mymuslimsaathi.com",
+    changeOrigin: true,
+  })
+);
 
 // middlewares
 app.use(cors());

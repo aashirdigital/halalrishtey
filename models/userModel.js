@@ -139,10 +139,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  zakat: {
-    type: String,
-    default: null,
-  },
+  // zakat: {
+  //   type: String,
+  //   default: null,
+  // },
   fasting: {
     type: String,
     default: null,
