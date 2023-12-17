@@ -26,26 +26,24 @@ app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // Static file for images
-const localUserImagesPath = path.join(__dirname, "userImages");
-const externalUserImagesProxy = createProxyMiddleware({
+app.use("/adsImages", express.static(path.join(__dirname, "adsImages")));
+app.use("/userImages", express.static(path.join(__dirname, "userImages")));
+app.use("/profile/:id", express.static(path.join(__dirname, "userImages")));
+// Proxy middleware for images
+const imageProxy = createProxyMiddleware({
   target: "https://mymuslimsaathi.com",
   changeOrigin: true,
 });
-
+// Middleware for "profile/:id" route
 app.use("/profile/:id", (req, res, next) => {
-  const imagePath = path.join(localUserImagesPath, req.params.id);
-
+  const imagePath = path.join(__dirname, "userImages", req.params.id);
   // Check if the image exists locally
   if (fs.existsSync(imagePath)) {
-    express.static(localUserImagesPath)(req, res, next);
+    express.static(path.join(__dirname, "userImages"))(req, res, next);
   } else {
-    // Proxy the request to the external website folder
-    externalUserImagesProxy(req, res, next);
+    imageProxy(req, res, next);
   }
 });
-
-// Admin
-app.use("/adsImages", express.static(path.join(__dirname, "adsImages")));
 
 // Routes
 app.use("/api/user/", require("./routes/userRoutes"));
