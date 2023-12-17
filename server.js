@@ -27,6 +27,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Static file for images
 app.use("/userImages", express.static(path.join(__dirname, "userImages")));
+app.use("/profile", express.static(path.join(__dirname, "userImages")));
+app.use("/profile/:id", express.static(path.join(__dirname, "userImages")));
 
 // Proxy middleware for images
 app.use(
@@ -36,7 +38,7 @@ app.use(
     next();
   },
   createProxyMiddleware({
-    target: "https://mymuslimsaathi.com",
+    target: "https://halalrishtey.com",
     changeOrigin: true,
   })
 );
