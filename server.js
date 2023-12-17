@@ -38,7 +38,7 @@ app.use(
     next();
   },
   createProxyMiddleware({
-    target: "https://halalrishtey.com",
+    target: "https://mymuslimsaathi.com",
     changeOrigin: true,
   })
 );
