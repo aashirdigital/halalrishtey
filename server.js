@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const fs = require("fs");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
 // dotenv
@@ -28,6 +29,12 @@ app.use(express.static(path.join(__dirname, "public")));
 // Static file for images
 app.use("/userImages", express.static(path.join(__dirname, "userImages")));
 app.use("/profile/:id", express.static(path.join(__dirname, "userImages")));
+
+// Proxy middleware for images
+const imageProxy = createProxyMiddleware({
+  target: "https://mymuslimsaathi.com",
+  changeOrigin: true,
+});
 
 // Proxy middleware for images
 app.use(
