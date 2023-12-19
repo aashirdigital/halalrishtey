@@ -27,6 +27,8 @@ const {
   getAllTodayMatchUserController,
   getAllUserNearMeController,
   checkMobileNumberController,
+  homePageUsersController,
+  updatePhotoPrivacy,
 } = require("../controllers/userCtrl");
 const authMiddleware = require("../middlewares/authMiddleware");
 
@@ -43,27 +45,37 @@ router.post("/step-one", stepOneController);
 router.post("/step-two", stepTwoController);
 router.post("/step-three", stepThreeController);
 // USER UPDATE PROFILE
-router.post("/update-user", updateUserController);
+router.post("/update-user", authMiddleware, updateUserController);
+router.post("/update-photo-privacy", updatePhotoPrivacy);
 // GET USER DATA
-router.post("/user", getUserController);
+router.post("/user", authMiddleware, getUserController);
 router.post("/getUserData", authMiddleware, authController);
-router.post("/get-profile-data", getProfileDataController);
-router.post("/get-all-users", getAllUserController);
-router.post("/get-all-users-near-me", getAllUserNearMeController);
-router.post("/get-all-today-match-users", getAllTodayMatchUserController);
-router.post("/delete-user", DeleteUserController);
+router.post("/get-profile-data", authMiddleware, getProfileDataController);
+router.post("/get-all-users", authMiddleware, getAllUserController);
+router.post("/home-page-users", homePageUsersController);
+router.post(
+  "/get-all-users-near-me",
+  authMiddleware,
+  getAllUserNearMeController
+);
+router.post(
+  "/get-all-today-match-users",
+  authMiddleware,
+  getAllTodayMatchUserController
+);
+router.post("/delete-user", authMiddleware, DeleteUserController);
 // VERIFY USER
 router.post("/send-otp", sendMailController);
 router.post("/verify-otp", verifyOtpController);
-router.post("/user-active", userActiveController);
+router.post("/user-active", authMiddleware, userActiveController);
 router.post("/check-mobile-number", checkMobileNumberController);
 router.post("/sendSMS", sendSMSController);
 router.post("/verify-mobile", verifyMobileController);
 router.post("/update-pass", updatePassController);
 // LIKE SYSTEM
-router.post("/user-like", userLikeController);
-router.post("/see-contact", userSeeContactController);
-router.post("/inbox-user-accept", getInboxUserAcceptController);
-router.post("/inbox-user-reject", getInboxUserRejectController);
+router.post("/user-like", authMiddleware, userLikeController);
+router.post("/see-contact", authMiddleware, userSeeContactController);
+router.post("/inbox-user-accept", authMiddleware, getInboxUserAcceptController);
+router.post("/inbox-user-reject", authMiddleware, getInboxUserRejectController);
 
 module.exports = router;

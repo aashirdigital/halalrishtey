@@ -89,7 +89,7 @@ router.post("/failure", async (req, res) => {
       await newPayment.save();
     }
   }
-  res.redirect("https://mymuslimsaathi.com/user-dashboard");
+  res.redirect("https://halalrishtey.com/user-dashboard");
 });
 
 // if payment success
@@ -219,7 +219,7 @@ router.post("/success", async (req, res) => {
     }, 4000);
     //end nodemailer
   }
-  res.redirect("https://mymuslimsaathi.com/user-dashboard");
+  res.redirect("https://halalrishtey.com/user-dashboard");
 });
 
 module.exports = router;
