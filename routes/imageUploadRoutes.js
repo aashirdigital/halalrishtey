@@ -3,6 +3,7 @@ const multer = require("multer");
 const router = express.Router();
 const userModel = require("../models/userModel");
 const fs = require("fs");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -12,8 +13,17 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + "--" + file.originalname.replace(/\s+/g, "-"));
   },
 });
-
 const upload = multer({ storage: storage });
+
+const verificationStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "VerificationImages");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "--" + file.originalname.replace(/\s+/g, "-"));
+  },
+});
+const uploadVerification = multer({ storage: verificationStorage });
 
 // upload
 router.post("/upload-image", upload.array("images", 5), async (req, res) => {
@@ -47,9 +57,7 @@ router.post("/upload-image", upload.array("images", 5), async (req, res) => {
     });
   }
 });
-
 // delete
-// Add a new route to handle image deletion
 router.delete("/delete-image", async (req, res) => {
   try {
     const { email, imagePath } = req.body;
@@ -85,5 +93,39 @@ router.delete("/delete-image", async (req, res) => {
     });
   }
 });
+
+// Upload Verification Image
+router.post(
+  "/upload-idproof",
+  uploadVerification.single("image"),
+  async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await userModel.findOne({ email });
+      if (!user) {
+        return res
+          .status(200)
+          .send({ success: false, message: "User not found" });
+      }
+      if (!req.file) {
+        return res
+          .status(400)
+          .send({ success: false, message: "No file uploaded" });
+      }
+      const uploadedImage = req.file.path;
+      user.idProof = uploadedImage;
+      await user.save();
+      res.status(200).send({
+        message: "Image uploaded successfully",
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: error.message,
+        success: false,
+      });
+    }
+  }
+);
 
 module.exports = router;

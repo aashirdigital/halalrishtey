@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
   },
   mobile: {
     type: String,
+    unique: true,
     default: null,
   },
   mobileVerified: {
@@ -101,6 +102,10 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
   // Family
+  fatherName: {
+    type: String,
+    default: null,
+  },
   fatherStatus: {
     type: String,
     default: null,
@@ -139,10 +144,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  // zakat: {
-  //   type: String,
-  //   default: null,
-  // },
+  zakat: {
+    type: String,
+    default: null,
+  },
   fasting: {
     type: String,
     default: null,
@@ -295,6 +300,10 @@ const userSchema = new mongoose.Schema({
   photoPrivacy: {
     type: String,
     default: "Visible to all Members",
+  },
+  idProof: {
+    type: String,
+    default: null,
   },
 });
 

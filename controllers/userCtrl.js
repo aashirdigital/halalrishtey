@@ -333,7 +333,6 @@ const getAllTodayMatchUserController = async (req, res) => {
       partnerAgeFrom,
       partnerAgeTo,
       partnerCountry,
-      partnerLanguage,
       partnerMaritalStatus,
       partnerState,
     } = req.body;
@@ -343,7 +342,6 @@ const getAllTodayMatchUserController = async (req, res) => {
       isVerified: "Yes",
       isDeleted: "No",
       age: { $gte: partnerAgeFrom, $lte: partnerAgeTo },
-      language: partnerLanguage,
       maritalStatus: partnerMaritalStatus,
       state: partnerState,
       country: partnerCountry,
