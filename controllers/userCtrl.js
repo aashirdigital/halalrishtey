@@ -290,6 +290,40 @@ const updateUserController = async (req, res) => {
   }
 };
 
+const updatePhotoPrivacy = async (req, res) => {
+  try {
+    const existingUser = await userModel.findOne({ email: req.body.email });
+    if (!existingUser) {
+      return res
+        .status(200)
+        .send({ success: false, message: "User Not Found" });
+    }
+    const userUpdate = await userModel.findOneAndUpdate(
+      {
+        email: req.body.email,
+      },
+      {
+        $set: req.body,
+      },
+      { new: true }
+    );
+    if (!userUpdate) {
+      return res
+        .status(201)
+        .send({ success: false, message: "Failed to Update" });
+    }
+    res.status(202).send({
+      success: true,
+      message: "Profile Updated Successfully",
+      data: userUpdate,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ success: false, message: `Update Ctrl ${error.message}` });
+  }
+};
+
 // ===================== Complete Profile Steps=====================
 
 const getAllTodayMatchUserController = async (req, res) => {
@@ -365,7 +399,54 @@ const getAllUserController = async (req, res) => {
     }
     users.forEach((user) => {
       user.mobile = undefined;
+      user.mobileOtp = undefined;
       user.email = undefined;
+      user.emailOtp = undefined;
+      user.isActive = undefined;
+      user.mobileVerified = undefined;
+      user.idVerified = undefined;
+      user.isVerified = undefined;
+      user.password = undefined;
+      user.likesCount = undefined;
+      user.contactCount = undefined;
+      user.likesData = undefined;
+      user.received = undefined;
+      user.sent = undefined;
+      user.accepted = undefined;
+      user.deleted = undefined;
+      user.contactData = undefined;
+      user.idProof = undefined;
+    });
+
+    res.status(200).send({
+      success: true,
+      message: "User Fetched Successful",
+      data: users,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: `Get All User Controller ${error.message}`,
+    });
+  }
+};
+
+const homePageUsersController = async (req, res) => {
+  try {
+    users = await userModel.find({
+      email: { $ne: "aashirdigital@gmail.com" },
+      isVerified: "Yes",
+      isDeleted: "No",
+    });
+    if (!Array.isArray(users)) {
+      // Ensure users is an array
+      users = [users];
+    }
+    users.forEach((user) => {
+      user.mobile = undefined;
+      user.email = undefined;
+      user.emailOtp = undefined;
       user.isActive = undefined;
       user.password = undefined;
       user.isVerified = undefined;
@@ -375,7 +456,6 @@ const getAllUserController = async (req, res) => {
       user.contactData = undefined;
       user.mobileVerified = undefined;
     });
-
     res.status(200).send({
       success: true,
       message: "User Fetched Successful",
@@ -405,7 +485,7 @@ const getAllUserNearMeController = async (req, res) => {
       });
     }
     if (!users) {
-      return res.status(404).send({
+      return res.status(200).send({
         success: false,
         message: "No User Found",
       });
@@ -427,7 +507,7 @@ const getAllUserNearMeController = async (req, res) => {
       user.mobileVerified = undefined;
     });
 
-    res.status(200).send({
+    res.status(201).send({
       success: true,
       message: "User Fetched Successful",
       data: users,
@@ -634,7 +714,7 @@ const sendSMSController = async (req, res) => {
     await sendSMS(smsOTP, mobile);
     const savedOtpUser = await userModel.findOneAndUpdate(
       { email: email },
-      { $set: { mobileOtp: smsOTP, mobile: mobile } },
+      { $set: { mobileOtp: smsOTP } },
       { new: true }
     );
     if (!savedOtpUser) {
@@ -671,7 +751,7 @@ const verifyMobileController = async (req, res) => {
     } else {
       const updateUser = await userModel.findOneAndUpdate(
         { email: req.body.email },
-        { $set: { mobileVerified: "Yes" } },
+        { $set: { mobileVerified: "Yes", mobile: req.body.mobile } },
         { new: true }
       );
       const token = jwt.sign({ id: userExist._id }, process.env.JWT_SECRET, {
@@ -934,4 +1014,6 @@ module.exports = {
   getAllTodayMatchUserController,
   getAllUserNearMeController,
   checkMobileNumberController,
+  homePageUsersController,
+  updatePhotoPrivacy,
 };
