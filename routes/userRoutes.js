@@ -29,6 +29,7 @@ const {
   checkMobileNumberController,
   homePageUsersController,
   updatePhotoPrivacy,
+  saveNumberController,
 } = require("../controllers/userCtrl");
 const authMiddleware = require("../middlewares/authMiddleware");
 
@@ -71,6 +72,7 @@ router.post("/user-active", authMiddleware, userActiveController);
 router.post("/check-mobile-number", checkMobileNumberController);
 router.post("/sendSMS", sendSMSController);
 router.post("/verify-mobile", verifyMobileController);
+router.post("/save-number", saveNumberController);
 router.post("/update-pass", updatePassController);
 // LIKE SYSTEM
 router.post("/user-like", authMiddleware, userLikeController);

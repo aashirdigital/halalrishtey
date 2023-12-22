@@ -140,18 +140,18 @@ const userSchema = new mongoose.Schema({
   },
   // more religious details
 
-  namaaz: {
-    type: String,
-    default: null,
-  },
-  zakat: {
-    type: String,
-    default: null,
-  },
-  fasting: {
-    type: String,
-    default: null,
-  },
+  // namaaz: {
+  //   type: String,
+  //   default: null,
+  // },
+  // zakat: {
+  //   type: String,
+  //   default: null,
+  // },
+  // fasting: {
+  //   type: String,
+  //   default: null,
+  // },
   // education
   qualification: {
     type: String,

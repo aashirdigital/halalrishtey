@@ -157,9 +157,12 @@ const stepOneController = async (req, res) => {
           age: req.body.form.age,
           maritalStatus: req.body.form.maritalStatus,
           height: req.body.form.height,
-          weight: req.body.form.weight,
           bodyType: req.body.form.bodyType,
-          language: req.body.form.language,
+          qualification: req.body.form.qualification,
+          collegeName: req.body.form.collegeName,
+          workingWith: req.body.form.workingWith,
+          employedAs: req.body.form.employedAs,
+          salary: req.body.form.salary,
         },
       },
       { new: true }
@@ -188,12 +191,24 @@ const stepTwoController = async (req, res) => {
       },
       {
         $set: {
-          qualification: req.body.form.qualification,
-          collegeName: req.body.form.collegeName,
-          workingWith: req.body.form.workingWith,
-          employedAs: req.body.form.employedAs,
-          salary: req.body.form.salary,
-          companyName: req.body.form.companyName,
+          fatherName: req.body.form.fatherName,
+          fatherStatus: req.body.form.fatherStatus,
+          motherStatus: req.body.form.motherStatus,
+          brothers: req.body.form.brothers,
+          sisters: req.body.form.sisters,
+          maslak: req.body.form.maslak,
+          country: req.body.form.country,
+          state: req.body.form.state,
+          city: req.body.form.city,
+          pincode: req.body.form.pincode,
+          partnerAgeFrom: req.body.partnerAgeFrom,
+          partnerAgeTo: req.body.partnerAgeTo,
+          partnerReligion: req.body.partnerReligion,
+          partnerLanguage: req.body.partnerLanguage,
+          partnerMaritalStatus: req.body.partnerMaritalStatus,
+          partnerCountry: req.body.partnerCountry,
+          partnerState: req.body.partnerState,
+          partnerCity: req.body.partnerCity,
         },
       },
       { new: true }
@@ -222,20 +237,7 @@ const stepThreeController = async (req, res) => {
         email: req.body.email,
       },
       {
-        $set: {
-          country: req.body.form.country,
-          state: req.body.form.state,
-          city: req.body.form.city,
-          pincode: req.body.form.pincode,
-          partnerAgeFrom: req.body.partnerAgeFrom,
-          partnerAgeTo: req.body.partnerAgeTo,
-          partnerReligion: req.body.partnerReligion,
-          partnerLanguage: req.body.partnerLanguage,
-          partnerMaritalStatus: req.body.partnerMaritalStatus,
-          partnerCountry: req.body.partnerCountry,
-          partnerState: req.body.partnerState,
-          partnerCity: req.body.partnerCity,
-        },
+        $set: {},
       },
       { new: true }
     );
@@ -774,6 +776,40 @@ const verifyMobileController = async (req, res) => {
   }
 };
 
+const saveNumberController = async (req, res) => {
+  try {
+    const userExist = await userModel.findOne({ email: req.body.email });
+    if (!userExist) {
+      return res
+        .status(200)
+        .send({ success: false, message: "User Not Found" });
+    }
+    const updateUser = await userModel.findOneAndUpdate(
+      { email: req.body.email },
+      { $set: { mobile: req.body.ph } },
+      { new: true }
+    );
+    const token = jwt.sign({ id: userExist._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    if (!updateUser) {
+      return res
+        .status(200)
+        .send({ success: false, message: "Failed to Verify" });
+    }
+    return res.status(202).send({
+      success: true,
+      message: "Number Saved Success",
+      data: updateUser,
+      token: token,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ success: false, message: `Save Number Ctrl ${error.message}` });
+  }
+};
+
 const updatePassController = async (req, res) => {
   try {
     const userExist = await userModel.findOne({ email: req.body.email });
@@ -1014,4 +1050,5 @@ module.exports = {
   checkMobileNumberController,
   homePageUsersController,
   updatePhotoPrivacy,
+  saveNumberController,
 };
