@@ -157,15 +157,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  collegeName: {
-    type: String,
-    default: null,
-  },
+  // collegeName: {
+  //   type: String,
+  //   default: null,
+  // },
   workingWith: {
     type: String,
     default: null,
   },
   employedAs: {
+    type: String,
+    default: null,
+  },
+  business: {
     type: String,
     default: null,
   },

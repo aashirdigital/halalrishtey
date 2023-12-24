@@ -159,8 +159,8 @@ const stepOneController = async (req, res) => {
           height: req.body.form.height,
           bodyType: req.body.form.bodyType,
           qualification: req.body.form.qualification,
-          collegeName: req.body.form.collegeName,
           workingWith: req.body.form.workingWith,
+          business: req.body.form.business,
           employedAs: req.body.form.employedAs,
           salary: req.body.form.salary,
         },
@@ -786,6 +786,7 @@ const saveNumberController = async (req, res) => {
     }
     const updateUser = await userModel.findOneAndUpdate(
       { email: req.body.email },
+      { $set: { mobile: req.body.ph } },
       { $set: { mobile: req.body.ph } },
       { new: true }
     );
