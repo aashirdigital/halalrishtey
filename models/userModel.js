@@ -267,6 +267,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 0,
   },
+  premiumValidityMonths: {
+    type: String,
+    default: null,
+  },
+  premiumStart: {
+    type: Date,
+    default: null,
+  },
+  premiumExpiry: {
+    type: Date,
+    default: null,
+  },
   contactData: {
     type: Array,
   },

@@ -22,10 +22,9 @@ router.post("/get-hashkey", async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       udf1: req.body.contacts,
+      udf2: req.body.validity,
     };
-
     const cryp = crypto.createHash("sha512");
-
     // const string = key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||SALT
     const text =
       data.key +
@@ -41,7 +40,9 @@ router.post("/get-hashkey", async (req, res) => {
       data.email +
       "|" +
       data.udf1 +
-      "||||||||||" +
+      "|" +
+      data.udf2 +
+      "|||||||||" +
       data.salt;
     cryp.update(text);
     const hash = cryp.digest("hex");
@@ -69,6 +70,7 @@ router.post("/failure", async (req, res) => {
     const payDate = req.body.addedon;
     const payTxnId = req.body.mihpayid;
     const contacts = req.body.udf1;
+    const premiumValidityMonths = req.body.udf2;
     const status = "failed";
 
     const payment = await PaymentModel.findOne({ myTxnId: req.body.txnid });
@@ -85,6 +87,7 @@ router.post("/failure", async (req, res) => {
         payTxnId,
         contacts,
         status,
+        premiumValidityMonths,
       });
       await newPayment.save();
     }
@@ -105,7 +108,16 @@ router.post("/success", async (req, res) => {
     const payDate = req.body.addedon;
     const payTxnId = req.body.mihpayid;
     const contacts = req.body.udf1;
+    const premiumValidityMonths = req.body.udf2;
     const status = "success";
+
+    const currentDate = new Date();
+    const premiumStart = currentDate;
+    const premiumExpiry = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + premiumValidityMonths,
+      currentDate.getDate()
+    );
 
     const payment = await PaymentModel.findOne({ myTxnId: req.body.txnid });
     if (!payment) {
@@ -121,6 +133,7 @@ router.post("/success", async (req, res) => {
         payTxnId,
         contacts,
         status,
+        premiumValidityMonths,
       });
       await newPayment.save();
     }
@@ -132,6 +145,9 @@ router.post("/success", async (req, res) => {
       {
         $set: {
           contacts: parseInt(req.body.udf1) + parseInt(existUser.contacts),
+          premiumValidityMonths: premiumValidityMonths,
+          premiumStart: premiumStart,
+          premiumExpiry: premiumExpiry,
         },
       },
       { new: true }

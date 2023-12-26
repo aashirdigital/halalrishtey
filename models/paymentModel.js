@@ -45,6 +45,9 @@ const paymentSchema = new mongoose.Schema(
     status: {
       type: String,
     },
+    premiumValidityMonths: {
+      type: String,
+    },
   },
   {
     timestamps: true,
