@@ -115,7 +115,7 @@ router.post("/success", async (req, res) => {
     const premiumStart = currentDate;
     const premiumExpiry = new Date(
       currentDate.getFullYear(),
-      currentDate.getMonth() + premiumValidityMonths,
+      currentDate.getMonth() + parseInt(premiumValidityMonths),
       currentDate.getDate()
     );
 
