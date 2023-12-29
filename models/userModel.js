@@ -118,15 +118,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  brothersMarried: {
-    type: String,
-    default: null,
-  },
   sisters: {
-    type: String,
-    default: null,
-  },
-  sistersMarried: {
     type: String,
     default: null,
   },
@@ -157,10 +149,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  // collegeName: {
-  //   type: String,
-  //   default: null,
-  // },
+  collegeName: {
+    type: String,
+    default: null,
+  },
   workingWith: {
     type: String,
     default: null,
