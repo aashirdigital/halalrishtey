@@ -150,6 +150,9 @@ router.post("/success", async (req, res) => {
           premiumStart: premiumStart,
           premiumExpiry: premiumExpiry,
           isPremium: true,
+          contactsWarningEmailSent: false,
+          premiumExpiryWarning: false,
+          premiumExpiredMail: false,
         },
       },
       { new: true }
