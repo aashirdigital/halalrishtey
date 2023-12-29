@@ -199,7 +199,7 @@ router.post("/success", async (req, res) => {
     }, 1000);
     //end nodemailer
   }
-  res.redirect("http://localhost:3000/user-dashboard");
+  res.redirect("https://halarishtey.com/user-dashboard");
 });
 
 module.exports = router;
