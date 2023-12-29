@@ -15,8 +15,9 @@ module.exports = async (email, subject, otp, msg) => {
       to: email, // list of receivers
       subject: subject, // Subject line
       text: `${msg} ${otp}`, // plain text body
-      html: `${msg} <b>${otp}</b>`, // html body
+      html: `${msg}`, // html body
     });
+    console.log("Email sent successfully.");
   } catch (error) {
     console.log("Email not sent");
     console.log(error);

@@ -51,7 +51,7 @@ router.post("/update-photo-privacy", updatePhotoPrivacy);
 // GET USER DATA
 router.post("/user", authMiddleware, getUserController);
 router.post("/getUserData", authMiddleware, authController);
-router.post("/get-profile-data", authMiddleware, getProfileDataController);
+router.post("/get-profile-data", getProfileDataController);
 router.post("/get-all-users", authMiddleware, getAllUserController);
 router.post("/home-page-users", homePageUsersController);
 router.post(

@@ -177,10 +177,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  companyName: {
-    type: String,
-    default: null,
-  },
+  // companyName: {
+  //   type: String,
+  //   default: null,
+  // },
   // lifestyle
   diet: {
     type: String,
@@ -264,7 +264,7 @@ const userSchema = new mongoose.Schema({
 
   // premium
   contacts: {
-    type: String,
+    type: Number,
     default: 0,
   },
   premiumValidityMonths: {
@@ -320,6 +320,22 @@ const userSchema = new mongoose.Schema({
   idProof: {
     type: String,
     default: null,
+  },
+  isPremium: {
+    type: Boolean,
+    default: false,
+  },
+  contactsWarningEmailSent: {
+    type: Boolean,
+    default: false,
+  },
+  premiumExpiryWarning: {
+    type: Boolean,
+    default: false,
+  },
+  premiumExpiredMail: {
+    type: Boolean,
+    default: false,
   },
 });
 

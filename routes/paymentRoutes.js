@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer");
 const UserModel = require("../models/userModel");
 const PaymentModel = require("../models/paymentModel");
 const userModel = require("../models/userModel");
+const fs = require("fs");
 
 // router object
 const router = express.Router();
@@ -148,6 +149,7 @@ router.post("/success", async (req, res) => {
           premiumValidityMonths: premiumValidityMonths,
           premiumStart: premiumStart,
           premiumExpiry: premiumExpiry,
+          isPremium: true,
         },
       },
       { new: true }
@@ -156,86 +158,45 @@ router.post("/success", async (req, res) => {
     //nodemailer
     setTimeout(async () => {
       //!send mail
-      let mailTransporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: "muslimsaathiofficial@gmail.com",
-          pass: "qengynbbvilixdqb",
-        },
-      });
-
-      let mailDetails = {
-        from: "muslimsaathiofficial@gmail.com",
-        to: `${req.body.email},`,
-        subject: "Payment Recipt",
-        // text: 'Node.js testing mail 3 from ashir ',
-        html: `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Payment Details</title>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                </head>
-                <body>
-                    <div>
-                        <p>Dear ${req.body.firstname} ,</p>
-                        <p>Your transaction with Muslimsaathi was <b>successfull</b></p>
-                        <br/>
-                          <table>
-                          <thead>
-                            <tr style="border:1px solid #000;">
-                              <th style="text-align: start; padding: 5px;">Merchant</th>
-                              <td style="text-align: start; padding: 5px;">Muslimsaathi</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr style="border:1px solid #000;">
-                              <th style="text-align: start; padding: 5px;">Name</th>
-                              <td style="text-align: start; padding: 5px;">${req.body.firstname}</td>
-                            </tr>
-                            <tr style="border:1px solid #000;">
-                              <th style="text-align: start; padding: 5px;">Plan Name</th>
-                              <td style="text-align: start; padding: 5px;">${req.body.productinfo}</td>
-                            </tr>
-                            <tr style="border:1px solid #000;">
-                              <th style="text-align: start; padding: 5px;">Amount</th>
-                              <td style="text-align: start; padding: 5px;">${req.body.amount}</td>
-                            </tr>
-                            <tr style="border:1px solid #000;">
-                              <th style="text-align: start; padding: 5px;">Mobile Number</th>
-                              <td style="text-align: start; padding: 5px;">${req.body.phone}</td>
-                            </tr>
-                            <tr style="border:1px solid #000;">
-                              <th style="text-align: start; padding: 5px;">Transaction ID</th>
-                              <td style="text-align: start; padding: 5px;">${req.body.txnid}</td>
-                            </tr>
-                            <tr style="border:1px solid #000;">
-                              <th style="text-align: start; padding: 5px;">Order Date</th>
-                              <td style="text-align: start; padding: 5px;">${req.body.addedon}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <br/>
-                        <p>For any information pertaining to the status of your payment, please contact us on https://mymuslimsaathi.com/contact</p>
-                        <br/>
-                        <p>Thanks and Regards, Muslimsaathi</p>
-                    </div>
-                </body>
-                </html>
-                `,
-        // html: fs.readFileSync('emailHTML.txt','utf8')
-      };
-
-      mailTransporter.sendMail(mailDetails, function (err, data) {
-        if (err) {
-          console.log(err);
-        }
-      });
-    }, 4000);
+      try {
+        const dynamicData = {
+          username: `${req.body.firstname}`,
+          planname: `${req.body.productinfo}`,
+          premiumStarts: `${premiumStart}`,
+          expiryDate: `${premiumExpiry}`,
+          mytxnId: `${req.body.txnid}`,
+        };
+        let htmlContent = fs.readFileSync("premiumMail.html", "utf8");
+        Object.keys(dynamicData).forEach((key) => {
+          const placeholder = new RegExp(`{${key}}`, "g");
+          htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+        });
+        // Send mail
+        let mailTransporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "muslimsaathiofficial@gmail.com",
+            pass: "qengynbbvilixdqb",
+          },
+        });
+        let mailDetails = {
+          from: "muslimsaathiofficial@gmail.com",
+          to: `${req.body.email}`,
+          subject: "Premium Plan Successfull",
+          html: htmlContent,
+        };
+        mailTransporter.sendMail(mailDetails, function (err, data) {
+          if (err) {
+            console.log(err);
+          }
+        });
+      } catch (error) {
+        console.error("Error sending email:", error);
+      }
+    }, 1000);
     //end nodemailer
   }
-  res.redirect("https://halalrishtey.com/user-dashboard");
+  res.redirect("http://localhost:3000/user-dashboard");
 });
 
 module.exports = router;

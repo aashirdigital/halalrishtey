@@ -3,6 +3,127 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendMail = require("./sendMail");
 const sendSMS = require("./sendSMS");
+const path = require("path");
+const fs = require("fs");
+const nodemailer = require("nodemailer");
+
+// Function to send email notification
+async function sendExpiryNotificationEmail(user, email) {
+  let subject, msg;
+  if (email === "expiringTomorrow") {
+    subject = "Your Premium Plan is Expiring Tomorrow";
+    msg = `We hope you're doing well. This is a friendly reminder that your Halal Rishtey plan is set to expire tomorrow. To continue enjoying uninterrupted access to our premium features, please renew your plan at your earliest convenience.`;
+    user.premiumExpiryWarning = true;
+    await user.save();
+  } else if (email === "lowContacts") {
+    subject = "Low Contacts Warning";
+    msg =
+      "Your contacts are running low. Please consider renewing your plan to increase your contact limit.";
+  } else if (email === "planexpired") {
+    subject = "Your Plan has expired";
+    msg = `We hope you're doing well. Sorry to say but your plan has expired and your profile has been set to normal. You can re-purchase premium membership plan for extra benefits as before!`;
+    user.contacts = 0;
+    user.isPremium = false;
+    user.premiumExpiredMail = true;
+    await user.save();
+  }
+  try {
+    const dynamicData = {
+      username: `${user.username}`,
+      email: `${user.email}`,
+      msg: `${msg}`,
+      subject: `${subject}`,
+      contact: `${user.contacts}`,
+    };
+    let htmlContent = fs.readFileSync("planExpiration.html", "utf8");
+    Object.keys(dynamicData).forEach((key) => {
+      const placeholder = new RegExp(`{${key}}`, "g");
+      htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+    });
+    // Send mail
+    let mailTransporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "muslimsaathiofficial@gmail.com",
+        pass: "qengynbbvilixdqb",
+      },
+    });
+    let mailDetails = {
+      from: "muslimsaathiofficial@gmail.com",
+      to: `${user.email}`,
+      subject: subject,
+      html: htmlContent,
+    };
+    mailTransporter.sendMail(mailDetails, function (err, data) {
+      if (err) {
+        console.log(err);
+      }
+    });
+    if (email === "expiringTomorrow") {
+      user.premiumExpiryWarning = true;
+      await user.save();
+    } else if (email === "lowContacts") {
+      user.contactsWarningEmailSent = true;
+      await user.save();
+    } else if (email === "planexpired") {
+      user.contacts = 0;
+      user.isPremium = false;
+      await user.save();
+    }
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+}
+
+async function updateContactsForExpiredPremium() {
+  try {
+    //! One Day Before expiry Users
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const allUsers = await userModel.find({
+      isPremium: true,
+      premiumExpiredMail: { $ne: true },
+    });
+    for (const user of allUsers) {
+      if (
+        user.premiumExpiry &&
+        today.getDate() + 1 === user.premiumExpiry.getUTCDate()
+      ) {
+        await sendExpiryNotificationEmail(user, "expiringTomorrow");
+      }
+    }
+    //! One Day Before expiry Users
+    //! Low Contacts Users
+    const usersWithLowContacts = await userModel.find({
+      contacts: { $lt: 5 },
+      contactsWarningEmailSent: { $ne: true },
+      isPremium: true,
+    });
+    for (const user of usersWithLowContacts) {
+      await sendExpiryNotificationEmail(user, "lowContacts");
+    }
+    //! Low Contacts Users
+    //! Expired Users
+    const todayDate = new Date();
+    const userExpiredPremium = await userModel.find({
+      premiumExpiry: { $lt: todayDate },
+      premiumExpiredMail: { $ne: true },
+    });
+    for (const user of userExpiredPremium) {
+      await sendExpiryNotificationEmail(user, "planexpired");
+    }
+    //! Expired Users
+  } catch (error) {
+    console.error(
+      "Error updating contacts and sending email notifications:",
+      error
+    );
+  }
+}
+// Call the function for testing
+updateContactsForExpiredPremium();
+setInterval(updateContactsForExpiredPremium, 86400000);
 
 // Admin callback
 const adminController = async (req, res) => {
@@ -35,22 +156,61 @@ const adminController = async (req, res) => {
 // register callback
 const registerController = async (req, res) => {
   try {
+    // Check if the email already exists
     const existingUser = await userModel.findOne({ email: req.body.email });
     if (existingUser) {
       return res
         .status(200)
-        .send({ success: false, message: "Email Alreay Exists" });
+        .send({ success: false, message: "Email Already Exists" });
     }
+    // Generate email OTP and hash the password
     const emailOtp = Math.floor(100000 + Math.random() * 900000);
     const password = req.body.password;
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     req.body.password = hashedPassword;
     req.body.emailOtp = emailOtp;
+    // Create and save a new user
     const newUser = new userModel(req.body);
     await newUser.save();
+    // Send registration email
+    try {
+      const dynamicData = {
+        username: `${req.body.username}`,
+        email: `${req.body.email}`,
+        planDetails: "Free Plan",
+      };
+      let htmlContent = fs.readFileSync("registerMail.html", "utf8");
+      Object.keys(dynamicData).forEach((key) => {
+        const placeholder = new RegExp(`{${key}}`, "g");
+        htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+      });
+      // Send mail
+      let mailTransporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "muslimsaathiofficial@gmail.com",
+          pass: "qengynbbvilixdqb",
+        },
+      });
+      let mailDetails = {
+        from: "muslimsaathiofficial@gmail.com",
+        to: `${req.body.email}`,
+        subject: "Welcome to Halal Rishtey!",
+        html: htmlContent,
+      };
+      mailTransporter.sendMail(mailDetails, function (err, data) {
+        if (err) {
+          console.log(err);
+        }
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+    // Send registration success response
     res.status(201).send({ success: true, message: "Registration Successful" });
   } catch (error) {
+    // Handle errors during registration process
     console.log(error);
     res.status(500).send({
       success: false,
@@ -868,6 +1028,47 @@ const userLikeController = async (req, res) => {
           .status(201)
           .send({ success: false, message: "Failed To Add Like" });
       }
+    }
+    try {
+      const userOne = await userModel.findOne({ msId: req.body.userOne });
+      const userTwo = await userModel.findOne({ msId: req.body.userTwo });
+      const dynamicData = {
+        username: `${userOne.username}`,
+        userTwo: `${userTwo.username}`,
+        msId: `${userOne.msId}`,
+        lastLogin: `${userOne.lastLogin}`,
+        age: `${userOne.age}`,
+        language: `${userOne.language}`,
+        qualification: `${userOne.qualification}`,
+        state: `${userOne.state}`,
+        path: `./male.webp`,
+      };
+      let htmlContent = fs.readFileSync("receivedLike.html", "utf8");
+      Object.keys(dynamicData).forEach((key) => {
+        const placeholder = new RegExp(`{${key}}`, "g");
+        htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+      });
+      // Send mail
+      let mailTransporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "muslimsaathiofficial@gmail.com",
+          pass: "qengynbbvilixdqb",
+        },
+      });
+      let mailDetails = {
+        from: "muslimsaathiofficial@gmail.com",
+        to: `${userTwo.email}`,
+        subject: "Received Interest in your profile",
+        html: htmlContent,
+      };
+      mailTransporter.sendMail(mailDetails, function (err, data) {
+        if (err) {
+          console.log(err);
+        }
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
     }
     return res
       .status(202)
