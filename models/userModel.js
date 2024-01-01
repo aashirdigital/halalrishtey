@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
   msId: {
     type: String,
     required: [true, "msId is required"],

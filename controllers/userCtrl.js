@@ -3,9 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendMail = require("./sendMail");
 const sendSMS = require("./sendSMS");
-const path = require("path");
-const fs = require("fs");
 const nodemailer = require("nodemailer");
+const fs = require("fs");
 
 // Function to send email notification
 async function sendExpiryNotificationEmail(user, email) {
@@ -44,12 +43,12 @@ async function sendExpiryNotificationEmail(user, email) {
     let mailTransporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "muslimsaathiofficial@gmail.com",
-        pass: "qengynbbvilixdqb",
+        user: "halalrishtey@gmail.com",
+        pass: "wnoeqfpstetrysxm",
       },
     });
     let mailDetails = {
-      from: "muslimsaathiofficial@gmail.com",
+      from: "halalrishtey@gmail.com",
       to: `${user.email}`,
       subject: subject,
       html: htmlContent,
@@ -173,7 +172,7 @@ const registerController = async (req, res) => {
     // Create and save a new user
     const newUser = new userModel(req.body);
     await newUser.save();
-    // Send registration email
+    //! Send registration email
     try {
       const dynamicData = {
         username: `${req.body.username}`,
@@ -189,12 +188,12 @@ const registerController = async (req, res) => {
       let mailTransporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "muslimsaathiofficial@gmail.com",
-          pass: "qengynbbvilixdqb",
+          user: "halalrishtey@gmail.com",
+          pass: "wnoeqfpstetrysxm",
         },
       });
       let mailDetails = {
-        from: "muslimsaathiofficial@gmail.com",
+        from: "halalrishtey@gmail.com",
         to: `${req.body.email}`,
         subject: "Welcome to Halal Rishtey!",
         html: htmlContent,
@@ -207,7 +206,41 @@ const registerController = async (req, res) => {
     } catch (error) {
       console.error("Error sending email:", error);
     }
-    // Send registration success response
+    //! Send registration email
+    //! Send Complete Profile email
+    try {
+      const dynamicData = {
+        username: `${req.body.username}`,
+      };
+      let htmlContent = fs.readFileSync("completeProfile.html", "utf8");
+      Object.keys(dynamicData).forEach((key) => {
+        const placeholder = new RegExp(`{${key}}`, "g");
+        htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+      });
+      // Send mail
+      let mailTransporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "halalrishtey@gmail.com",
+          pass: "wnoeqfpstetrysxm",
+        },
+      });
+      let mailDetails = {
+        from: "halalrishtey@gmail.com",
+        to: `${req.body.email}`,
+        subject:
+          "Enhance Your Experience - Complete Your Halal Rishtey Profile!",
+        html: htmlContent,
+      };
+      mailTransporter.sendMail(mailDetails, function (err, data) {
+        if (err) {
+          console.log(err);
+        }
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+    //! Send Complete Profile email
     res.status(201).send({ success: true, message: "Registration Successful" });
   } catch (error) {
     // Handle errors during registration process
@@ -1052,12 +1085,12 @@ const userLikeController = async (req, res) => {
       let mailTransporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "muslimsaathiofficial@gmail.com",
-          pass: "qengynbbvilixdqb",
+          user: "halalrishtey@gmail.com",
+          pass: "wnoeqfpstetrysxm",
         },
       });
       let mailDetails = {
-        from: "muslimsaathiofficial@gmail.com",
+        from: "halalrishtey@gmail.com",
         to: `${userTwo.email}`,
         subject: "Received Interest in your profile",
         html: htmlContent,

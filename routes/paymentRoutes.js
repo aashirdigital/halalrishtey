@@ -178,12 +178,12 @@ router.post("/success", async (req, res) => {
         let mailTransporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "muslimsaathiofficial@gmail.com",
-            pass: "qengynbbvilixdqb",
+            user: "halalrishtey@gmail.com",
+            pass: "wnoeqfpstetrysxm",
           },
         });
         let mailDetails = {
-          from: "muslimsaathiofficial@gmail.com",
+          from: "halalrishtey@gmail.com",
           to: `${req.body.email}`,
           subject: "Premium Plan Successfull",
           html: htmlContent,

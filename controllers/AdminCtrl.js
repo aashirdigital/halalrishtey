@@ -1,13 +1,9 @@
 const userModel = require("../models/userModel");
-const paymentModel = require("../models/paymentModel");
-const contactModel = require("../models/contactModel");
 const adsModel = require("../models/AdsModel");
 const planModel = require("../models/PlanModel");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const sendMail = require("./sendMail");
-const sendSMS = require("./sendSMS");
-const fs = require("fs").promises;
+const nodemailer = require("nodemailer");
+const fs = require("fs");
 
 const getAllUserController = async (req, res) => {
   try {
@@ -72,26 +68,62 @@ const deleteUserController = async (req, res) => {
 
 const editUserController = async (req, res) => {
   try {
-    const { msId } = req.body;
+    const { msId, isVerified } = req.body;
     if (!msId) {
       return res.status(400).send({
         success: false,
         message: "msId is required in the request body",
       });
     }
-
     const updateUser = await userModel.findOneAndUpdate(
       { msId },
       { $set: req.body },
       { new: true }
     );
-
     if (!updateUser) {
       return res.status(200).send({
         success: false,
         message: "Failed to Update User",
       });
     }
+
+    //! user is verified
+    if (isVerified === "Yes") {
+      try {
+        const dynamicData = {
+          username: `${req.body.username}`,
+        };
+        let htmlContent = fs.readFileSync("profileVerification.html", "utf8");
+        Object.keys(dynamicData).forEach((key) => {
+          const placeholder = new RegExp(`{${key}}`, "g");
+          htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+        });
+        // Send mail
+        let mailTransporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "halalrishtey@gmail.com",
+            pass: "wnoeqfpstetrysxm",
+          },
+        });
+        let mailDetails = {
+          from: "halalrishtey@gmail.com",
+          to: `${req.body.email}`,
+          subject: "Your Halal Rishtey Profile is Now Approved and Live!",
+          html: htmlContent,
+        };
+        mailTransporter.sendMail(mailDetails, function (err, data) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log("Mail sent");
+          }
+        });
+      } catch (error) {
+        console.error("Error sending email:", error);
+      }
+    }
+    //! user is verified
 
     return res
       .status(201)
