@@ -33,10 +33,9 @@ app.use(
   "/admin-edit-user/:id",
   express.static(path.join(__dirname, "userImages"))
 );
-
 // Proxy middleware for images
 const imageProxy = createProxyMiddleware({
-  target: "https://halalrishtey.com",
+  target: "https://mymuslimsaathi.com",
   changeOrigin: true,
 });
 
@@ -48,13 +47,12 @@ app.use(
     next();
   },
   createProxyMiddleware({
-    target: "https://halalrishtey.com",
+    target: "https://mymuslimsaathi.com",
     changeOrigin: true,
   })
 );
 // Middleware for "profile/:id" route
 app.use("/profile/:id", (req, res, next) => {
-  console.log("user" + req.params.id);
   const imagePath = path.join(__dirname, "userImages", req.params.id);
   if (fs.existsSync(imagePath)) {
     express.static(path.join(__dirname, "userImages"))(req, res, next);
