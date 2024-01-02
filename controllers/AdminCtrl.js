@@ -94,14 +94,7 @@ const editUserController = async (req, res) => {
       });
     }
 
-    //! Admin Reject
-    if (idVerified === "reject") {
-      fs.unlinkSync(existingUser.idProof);
-      existingUser.idProof = null;
-      await existingUser.save();
-    }
-
-    //! user is verified
+    //! User profile verification
     if (existingUser.isVerified === "No") {
       if (isVerified === "Yes") {
         try {
@@ -139,7 +132,7 @@ const editUserController = async (req, res) => {
         }
       }
     }
-    //! user is verified
+    //! User profile verification
 
     //! user ID verified
     if (
@@ -189,7 +182,7 @@ const editUserController = async (req, res) => {
     //! user ID Reject
     if (
       existingUser.idVerified === "No" ||
-      existingUser.idVerified === "reject"
+      existingUser.idVerified === "approved"
     ) {
       if (idVerified === "reject") {
         try {
@@ -229,6 +222,15 @@ const editUserController = async (req, res) => {
       }
     }
     //! user ID Reject
+
+    //! Admin Reject then updating removing photo from database
+    if (existingUser.idProof) {
+      if (idVerified === "reject") {
+        fs.unlinkSync(existingUser.idProof);
+        existingUser.idProof = null;
+        await existingUser.save();
+      }
+    }
 
     return res
       .status(202)

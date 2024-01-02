@@ -45,7 +45,7 @@ router.post(
 );
 router.post("/delete-ads", adminAuthMiddleware, deleteAdsController);
 router.post("/add-plan", adminAuthMiddleware, addPlanController);
-router.get("/get-plans", adminAuthMiddleware, getAllPlanController);
+router.get("/get-plans", getAllPlanController);
 
 // ============== BULK EMAIL
 router.get(

@@ -57,6 +57,14 @@ app.use("/profile/:id", (req, res, next) => {
     imageProxy(req, res, next);
   }
 });
+app.use("/admin-edit-users/:id", (req, res, next) => {
+  const imagePath = path.join(__dirname, "userImages", req.params.id);
+  if (fs.existsSync(imagePath)) {
+    express.static(path.join(__dirname, "userImages"))(req, res, next);
+  } else {
+    imageProxy(req, res, next);
+  }
+});
 // Admin
 app.use("/adsImages", express.static(path.join(__dirname, "adsImages")));
 // Routes

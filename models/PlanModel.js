@@ -17,6 +17,9 @@ const planSchema = new mongoose.Schema({
     type: String,
     required: [true, "validity is required"],
   },
+  discount: {
+    type: String,
+  },
 });
 
 const planModel = mongoose.model("plan", planSchema);
