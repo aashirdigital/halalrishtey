@@ -13,7 +13,6 @@ const {
   getIncompleteUsersController,
   sendMailToIncompleteUsersController,
 } = require("../controllers/AdminCtrl");
-const authMiddleware = require("../middlewares/authMiddleware");
 const adminAuthMiddleware = require("../middlewares/adminAuthMiddleware");
 
 // router object

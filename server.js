@@ -29,10 +29,14 @@ app.use(express.static(path.join(__dirname, "public")));
 // Static file for images
 app.use("/userImages", express.static(path.join(__dirname, "userImages")));
 app.use("/profile/:id", express.static(path.join(__dirname, "userImages")));
+app.use(
+  "/admin-edit-user/:id",
+  express.static(path.join(__dirname, "userImages"))
+);
 
 // Proxy middleware for images
 const imageProxy = createProxyMiddleware({
-  target: "https://mymuslimsaathi.com",
+  target: "https://halalrishtey.com",
   changeOrigin: true,
 });
 
@@ -44,12 +48,13 @@ app.use(
     next();
   },
   createProxyMiddleware({
-    target: "https://mymuslimsaathi.com",
+    target: "https://halalrishtey.com",
     changeOrigin: true,
   })
 );
 // Middleware for "profile/:id" route
 app.use("/profile/:id", (req, res, next) => {
+  console.log("user" + req.params.id);
   const imagePath = path.join(__dirname, "userImages", req.params.id);
   if (fs.existsSync(imagePath)) {
     express.static(path.join(__dirname, "userImages"))(req, res, next);
@@ -57,7 +62,7 @@ app.use("/profile/:id", (req, res, next) => {
     imageProxy(req, res, next);
   }
 });
-app.use("/admin-edit-users/:id", (req, res, next) => {
+app.use("/admin-edit-user/:id", (req, res, next) => {
   const imagePath = path.join(__dirname, "userImages", req.params.id);
   if (fs.existsSync(imagePath)) {
     express.static(path.join(__dirname, "userImages"))(req, res, next);
