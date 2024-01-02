@@ -139,7 +139,10 @@ const adminController = async (req, res) => {
         .status(200)
         .send({ success: false, message: "Invalid Credentials" });
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+
+    const isAdmin = user.isAdmin || false; // If isAdmin is undefined, default to false
+
+    const token = jwt.sign({ id: user._id, isAdmin }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
     res.status(200).send({ success: true, message: "Login Successful", token });
@@ -206,7 +209,8 @@ const registerController = async (req, res) => {
     } catch (error) {
       console.error("Error sending email:", error);
     }
-    //! Send registration email
+    //! Send registration email END
+
     //! Send Complete Profile email
     try {
       const dynamicData = {
@@ -240,7 +244,7 @@ const registerController = async (req, res) => {
     } catch (error) {
       console.error("Error sending email:", error);
     }
-    //! Send Complete Profile email
+    //! Send Complete Profile email END
     res.status(201).send({ success: true, message: "Registration Successful" });
   } catch (error) {
     // Handle errors during registration process

@@ -14,6 +14,7 @@ const {
   sendMailToIncompleteUsersController,
 } = require("../controllers/AdminCtrl");
 const authMiddleware = require("../middlewares/authMiddleware");
+const adminAuthMiddleware = require("../middlewares/adminAuthMiddleware");
 
 // router object
 const router = express.Router();
@@ -31,25 +32,25 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // ALl Users
-router.get("/get-all-users", authMiddleware, getAllUserController);
-router.post("/get-user", authMiddleware, getUserController);
-router.post("/delete-user", authMiddleware, deleteUserController);
-router.post("/admin-edit-user", authMiddleware, editUserController);
-router.get("/get-ads", authMiddleware, getAdsController);
+router.get("/get-all-users", adminAuthMiddleware, getAllUserController);
+router.post("/get-user", adminAuthMiddleware, getUserController);
+router.post("/delete-user", adminAuthMiddleware, deleteUserController);
+router.post("/admin-edit-user", adminAuthMiddleware, editUserController);
+router.get("/get-ads", adminAuthMiddleware, getAdsController);
 router.post(
   "/post-ads",
   upload.single("image"),
-  authMiddleware,
+  adminAuthMiddleware,
   postAdsController
 );
-router.post("/delete-ads", authMiddleware, deleteAdsController);
-router.post("/add-plan", authMiddleware, addPlanController);
-router.get("/get-plans", authMiddleware, getAllPlanController);
+router.post("/delete-ads", adminAuthMiddleware, deleteAdsController);
+router.post("/add-plan", adminAuthMiddleware, addPlanController);
+router.get("/get-plans", adminAuthMiddleware, getAllPlanController);
 
 // ============== BULK EMAIL
 router.get(
   "/get-incomplete-users",
-  authMiddleware,
+  adminAuthMiddleware,
   getIncompleteUsersController
 );
 router.post(

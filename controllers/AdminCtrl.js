@@ -68,11 +68,18 @@ const deleteUserController = async (req, res) => {
 
 const editUserController = async (req, res) => {
   try {
-    const { msId, isVerified } = req.body;
+    const { msId, isVerified, idVerified } = req.body;
     if (!msId) {
       return res.status(400).send({
         success: false,
         message: "msId is required in the request body",
+      });
+    }
+    const existingUser = await userModel.findOne({ msId: msId });
+    if (!existingUser) {
+      return res.status(200).send({
+        success: false,
+        message: "No user found",
       });
     }
     const updateUser = await userModel.findOneAndUpdate(
@@ -81,52 +88,150 @@ const editUserController = async (req, res) => {
       { new: true }
     );
     if (!updateUser) {
-      return res.status(200).send({
+      return res.status(201).send({
         success: false,
         message: "Failed to Update User",
       });
     }
 
+    //! Admin Reject
+    if (idVerified === "reject") {
+      fs.unlinkSync(existingUser.idProof);
+      existingUser.idProof = null;
+      await existingUser.save();
+    }
+
     //! user is verified
-    if (isVerified === "Yes") {
-      try {
-        const dynamicData = {
-          username: `${req.body.username}`,
-        };
-        let htmlContent = fs.readFileSync("profileVerification.html", "utf8");
-        Object.keys(dynamicData).forEach((key) => {
-          const placeholder = new RegExp(`{${key}}`, "g");
-          htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
-        });
-        // Send mail
-        let mailTransporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: "halalrishtey@gmail.com",
-            pass: "wnoeqfpstetrysxm",
-          },
-        });
-        let mailDetails = {
-          from: "halalrishtey@gmail.com",
-          to: `${req.body.email}`,
-          subject: "Your Halal Rishtey Profile is Now Approved and Live!",
-          html: htmlContent,
-        };
-        mailTransporter.sendMail(mailDetails, function (err, data) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log("Mail sent");
-          }
-        });
-      } catch (error) {
-        console.error("Error sending email:", error);
+    if (existingUser.isVerified === "No") {
+      if (isVerified === "Yes") {
+        try {
+          const dynamicData = {
+            username: `${req.body.username}`,
+          };
+          let htmlContent = fs.readFileSync("profileVerification.html", "utf8");
+          Object.keys(dynamicData).forEach((key) => {
+            const placeholder = new RegExp(`{${key}}`, "g");
+            htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+          });
+          // Send mail
+          let mailTransporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "halalrishtey@gmail.com",
+              pass: "wnoeqfpstetrysxm",
+            },
+          });
+          let mailDetails = {
+            from: "halalrishtey@gmail.com",
+            to: `${req.body.email}`,
+            subject: "Your Halal Rishtey Profile is Now Approved and Live!",
+            html: htmlContent,
+          };
+          mailTransporter.sendMail(mailDetails, function (err, data) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log("Mail sent");
+            }
+          });
+        } catch (error) {
+          console.error("Error sending email:", error);
+        }
       }
     }
     //! user is verified
 
+    //! user ID verified
+    if (
+      existingUser.idVerified === "No" ||
+      existingUser.idVerified === "reject"
+    ) {
+      if (idVerified === "approved") {
+        console.log("running");
+        try {
+          const dynamicData = {
+            username: `${req.body.username}`,
+          };
+          let htmlContent = fs.readFileSync("idVerifiedMail.html", "utf8");
+          Object.keys(dynamicData).forEach((key) => {
+            const placeholder = new RegExp(`{${key}}`, "g");
+            htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+          });
+          // Send mail
+          let mailTransporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "halalrishtey@gmail.com",
+              pass: "wnoeqfpstetrysxm",
+            },
+          });
+          let mailDetails = {
+            from: "halalrishtey@gmail.com",
+            to: `${req.body.email}`,
+            subject:
+              "Congratulations! Your Halal Rishtey Profile is Now Verified with a Badge 🎉",
+            html: htmlContent,
+          };
+          mailTransporter.sendMail(mailDetails, function (err, data) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log("Mail sent");
+            }
+          });
+        } catch (error) {
+          console.error("Error sending email:", error);
+        }
+      }
+    }
+    //! user ID verified
+
+    //! user ID Reject
+    if (
+      existingUser.idVerified === "No" ||
+      existingUser.idVerified === "reject"
+    ) {
+      if (idVerified === "reject") {
+        try {
+          const dynamicData = {
+            username: `${req.body.username}`,
+          };
+          let htmlContent = fs.readFileSync("idRejectMail.html", "utf8");
+          Object.keys(dynamicData).forEach((key) => {
+            const placeholder = new RegExp(`{${key}}`, "g");
+            htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+          });
+          // Send mail
+          let mailTransporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "halalrishtey@gmail.com",
+              pass: "wnoeqfpstetrysxm",
+            },
+          });
+          let mailDetails = {
+            from: "halalrishtey@gmail.com",
+            to: `${req.body.email}`,
+            subject:
+              "Important Notice: Rejection of Your ID Proof Submission on Halal Rishtey",
+            html: htmlContent,
+          };
+          mailTransporter.sendMail(mailDetails, function (err, data) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log("Mail sent");
+            }
+          });
+        } catch (error) {
+          console.error("Error sending email:", error);
+        }
+      }
+    }
+    //! user ID Reject
+
     return res
-      .status(201)
+      .status(202)
       .send({ success: true, message: "User Updated Successfully" });
   } catch (error) {
     return res.status(500).send({
