@@ -426,6 +426,59 @@ const sendMailToIncompleteUsersController = async (req, res) => {
   }
 };
 
+const sendMailToUserController = async (req, res) => {
+  try {
+    const { email, subject, msg } = req.body;
+    const user = userModel.findOne({ email: email });
+    if (!user) {
+      return res
+        .status(200)
+        .send({ success: false, message: "User not found" });
+    }
+
+    //! MAIL
+    try {
+      const dynamicData = {
+        username: `${user.username}`,
+        email: `${email}`,
+        subject: `${subject}`,
+        msg: `${msg}`,
+      };
+      let htmlContent = fs.readFileSync("mailToUser.html", "utf8");
+      Object.keys(dynamicData).forEach((key) => {
+        const placeholder = new RegExp(`{${key}}`, "g");
+        htmlContent = htmlContent.replace(placeholder, dynamicData[key]);
+      });
+      // Send mail
+      let mailTransporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "halalrishtey@gmail.com",
+          pass: "wnoeqfpstetrysxm",
+        },
+      });
+      let mailDetails = {
+        from: "halalrishtey@gmail.com",
+        to: `${email}`,
+        subject: `${subject}`,
+        html: htmlContent,
+      };
+      mailTransporter.sendMail(mailDetails, function (err, data) {
+        if (err) {
+          console.log(err);
+        }
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+    //! MAIL
+    res.status(200).send({ success: true, message: "Email sent successfully" });
+  } catch (error) {
+    console.error(`Send Mail to Incomplete Profiles Ctrl: ${error.message}`);
+    res.status(500).send({ success: false, message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   getAllUserController,
   getUserController,
@@ -438,4 +491,5 @@ module.exports = {
   getAllPlanController,
   getIncompleteUsersController,
   sendMailToIncompleteUsersController,
+  sendMailToUserController,
 };

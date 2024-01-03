@@ -12,6 +12,7 @@ const {
   deleteUserController,
   getIncompleteUsersController,
   sendMailToIncompleteUsersController,
+  sendMailToUserController,
 } = require("../controllers/AdminCtrl");
 const adminAuthMiddleware = require("../middlewares/adminAuthMiddleware");
 
@@ -55,6 +56,12 @@ router.get(
 router.post(
   "/send-mail-to-incomplete-profiles",
   sendMailToIncompleteUsersController
+);
+
+router.post(
+  "/send-mail-to-user",
+  adminAuthMiddleware,
+  sendMailToUserController
 );
 
 module.exports = router;
