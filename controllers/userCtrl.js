@@ -415,9 +415,14 @@ const stepTwoController = async (req, res) => {
         .status(200)
         .send({ success: false, message: "Failed to Upfate" });
     }
-    return res
-      .status(201)
-      .send({ success: true, message: "Data Updated Successfully" });
+    const token = jwt.sign({ id: updateUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    return res.status(201).send({
+      success: true,
+      message: "Profile Created Updated Successfully",
+      data: token,
+    });
   } catch (error) {
     res.status(500).send({
       success: false,
@@ -951,9 +956,6 @@ const verifyMobileController = async (req, res) => {
         { $set: { mobileVerified: "Yes", mobile: req.body.mobile } },
         { new: true }
       );
-      const token = jwt.sign({ id: userExist._id }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
-      });
       if (!updateUser) {
         return res
           .status(200)
@@ -963,7 +965,6 @@ const verifyMobileController = async (req, res) => {
         success: true,
         message: message,
         data: updateUser,
-        token: token,
       });
     }
   } catch (error) {
