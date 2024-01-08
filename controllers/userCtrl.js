@@ -270,11 +270,9 @@ const loginController = async (req, res) => {
         .status(200)
         .send({ success: false, message: "Invalid Credentials" });
     }
-
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-
     if (isMatch) {
       user.lastLogin = new Date();
       await user.save();
