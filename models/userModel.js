@@ -67,6 +67,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  childrens: {
+    type: String,
+    default: null,
+  },
+  childrensCount: {
+    type: String,
+    default: null,
+  },
   height: {
     type: String,
     default: null,
@@ -94,10 +102,14 @@ const userSchema = new mongoose.Schema({
     default: "Islam - Muslim",
   },
   language: {
-    type: String,
+    type: Array,
     default: null,
   },
   community: {
+    type: String,
+    default: null,
+  },
+  otherCommunity: {
     type: String,
     default: null,
   },
@@ -135,11 +147,10 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
   // more religious details
-
-  // namaaz: {
-  //   type: String,
-  //   default: null,
-  // },
+  namaaz: {
+    type: String,
+    default: null,
+  },
   // zakat: {
   //   type: String,
   //   default: null,
@@ -182,6 +193,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  complexion: {
+    type: String,
+    default: null,
+  },
   //location
   country: {
     type: String,
@@ -214,6 +229,10 @@ const userSchema = new mongoose.Schema({
     default: "Muslim - Islam",
   },
   partnerLanguage: {
+    type: Array,
+    default: null,
+  },
+  partnerMaslak: {
     type: String,
     default: null,
   },

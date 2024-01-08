@@ -351,6 +351,8 @@ const stepOneController = async (req, res) => {
         $set: {
           age: req.body.form.age,
           maritalStatus: req.body.form.maritalStatus,
+          childrens: req.body.form.childrens,
+          childrensCount: req.body.form.childrensCount,
           height: req.body.form.height,
           bodyType: req.body.form.bodyType,
           qualification: req.body.form.qualification,
@@ -509,6 +511,11 @@ const updatePhotoPrivacy = async (req, res) => {
       },
       { new: true }
     );
+    // If language is provided, update it separately
+    // if (req.body.language) {
+    //   userUpdate.language = req.body.language;
+    //   await userUpdate.save();
+    // }
     if (!userUpdate) {
       return res
         .status(201)

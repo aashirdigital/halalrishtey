@@ -19,6 +19,7 @@
     "country-state-city": "^3.2.1",
     "firebase": "^10.5.0",
     "jspdf": "^2.5.1",
+    "multiselect-react-dropdown": "^2.0.25",
     "otp-input-react": "^0.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
