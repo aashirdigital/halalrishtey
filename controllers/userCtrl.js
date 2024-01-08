@@ -937,10 +937,9 @@ const sendSMSController = async (req, res) => {
 };
 
 const verifyMobileController = async (req, res) => {
-  const message =
-    req.body.message === "Profile"
-      ? "Profile Created Successfully"
-      : "Mobile Verified Successfully";
+  req.body.message === "Profile"
+    ? "Profile Created Successfully"
+    : "Mobile Verified Successfully";
   try {
     const userExist = await userModel.findOne({ email: req.body.email });
     if (!userExist) {
@@ -963,7 +962,7 @@ const verifyMobileController = async (req, res) => {
       }
       return res.status(202).send({
         success: true,
-        message: message,
+        message: req.body.message,
         data: updateUser,
       });
     }

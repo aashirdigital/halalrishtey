@@ -6,16 +6,16 @@ module.exports = async (email, subject, otp, msg) => {
       host: "smtp.gmail.com",
       port: 587,
       auth: {
-        user: "muslimsaathiofficial@gmail.com",
-        pass: "qengynbbvilixdqb",
+        user: "halalrishtey@gmail.com",
+        pass: "wnoeqfpstetrysxm",
       },
     });
     await transporter.sendMail({
-      from: "muslimsaathiofficial@gmail.com", // sender address
+      from: "halalrishtey@gmail.com", // sender address
       to: email, // list of receivers
       subject: subject, // Subject line
       text: `${msg} ${otp}`, // plain text body
-      html: `${msg}`, // html body
+      html: `${msg} ${otp}`, // html body
     });
     console.log("Email sent successfully.");
   } catch (error) {

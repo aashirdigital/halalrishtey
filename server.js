@@ -34,39 +34,41 @@ app.use(
   express.static(path.join(__dirname, "userImages"))
 );
 // Proxy middleware for images
-const imageProxy = createProxyMiddleware({
-  target: "https://mymuslimsaathi.com",
-  changeOrigin: true,
-});
+// const imageProxy = createProxyMiddleware({
+//   target: "https://mymuslimsaathi.com",
+//   changeOrigin: true,
+// });
 
 // Proxy middleware for images
-app.use(
-  "/userImages",
-  (req, res, next) => {
-    console.log("Proxying request to target server:", req.url);
-    next();
-  },
-  createProxyMiddleware({
-    target: "https://mymuslimsaathi.com",
-    changeOrigin: true,
-  })
-);
+// app.use(
+//   "/userImages",
+//   (req, res, next) => {
+//     console.log("Proxying request to target server:", req.url);
+//     next();
+//   },
+//   createProxyMiddleware({
+//     target: "https://mymuslimsaathi.com",
+//     changeOrigin: true,
+//   })
+// );
 // Middleware for "profile/:id" route
 app.use("/profile/:id", (req, res, next) => {
   const imagePath = path.join(__dirname, "userImages", req.params.id);
   if (fs.existsSync(imagePath)) {
     express.static(path.join(__dirname, "userImages"))(req, res, next);
-  } else {
-    imageProxy(req, res, next);
   }
+  // else {
+  //   imageProxy(req, res, next);
+  // }
 });
 app.use("/admin-edit-user/:id", (req, res, next) => {
   const imagePath = path.join(__dirname, "userImages", req.params.id);
   if (fs.existsSync(imagePath)) {
     express.static(path.join(__dirname, "userImages"))(req, res, next);
-  } else {
-    imageProxy(req, res, next);
   }
+  // else {
+  //   imageProxy(req, res, next);
+  // }
 });
 // Admin
 app.use("/adsImages", express.static(path.join(__dirname, "adsImages")));
